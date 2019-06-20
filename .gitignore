@@ -19,6 +19,9 @@ build
 *.iws
 .idea
 
+# visual studio
+.vscode/
+
 # mac
 .DS_Store
 
