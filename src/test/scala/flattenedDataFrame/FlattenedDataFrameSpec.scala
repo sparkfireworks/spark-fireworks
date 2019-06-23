@@ -41,8 +41,14 @@ class FlattenedDataFrameSpec extends FunSuite with DataFrameSuiteBase {
     val filePath: String = getClass.getResource("/test_data.json").getPath
     val nestedDataFrame: DataFrame = spark.read.json(filePath)
     val actual: DataFrame = FlattenedDataFrame(nestedDataFrame = nestedDataFrame, columnsToExclude = List()).df
-    val expected: DataFrame = get_ordered_dataframe(fileName = "/expected_data.json", columns = actual.columns)
+    println(hashed_dataframe(actual))
+    // val expected: DataFrame = get_ordered_dataframe(fileName = "/expected_data.json", columns = actual.columns)
+    val expected: DataFrame = spark.emptyDataFrame
     assertDataFrameEquals(expected, actual)
+  }
+
+  private def hashed_dataframe(df: DataFrame) ={
+    df.columns.mkString("_")
   }
 
   private def get_ordered_dataframe(fileName: String, columns: Array[String]) = {

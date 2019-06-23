@@ -13,7 +13,11 @@ lazy val dependencies = Seq(
   "org.apache.spark" %% "spark-core" % "2.3.0",
   // https://mvnrepository.com/artifact/org.apache.spark/spark-sql
   "org.apache.spark" %% "spark-sql" % "2.3.0",
-  "com.holdenkarau" %% "spark-testing-base" % "2.3.0_0.12.0" % "test"
+  // https://mvnrepository.com/artifact/com.holdenkarau/spark-testing-base
+  "com.holdenkarau" %% "spark-testing-base" % "2.3.0_0.12.0" % "test",
+  // https://mvnrepository.com/artifact/com.databricks/spark-xml
+  "com.databricks" %% "spark-xml" % "0.4.1"
+
 )
 
 lazy val root = (project in file("."))
