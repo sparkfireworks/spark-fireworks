@@ -47,14 +47,14 @@ class FlattenedDataFrameSpec extends FunSuite with DataFrameSuiteBase {
 
   test("isColumnOfArrayType given a Dataframe with array column and that column name should return true") {
     val filePath: String = getClass.getResource("/test_data_2.json").getPath
-    val columnOfArrayType = "data1"
+    val columnOfArrayType: String = "data1"
     val actual: Boolean = FlattenedDataFrame.isColumnOfArrayType(dataFrame = spark.read.json(filePath), column = columnOfArrayType)
     assertTrue(actual)
   }
 
   test("isColumnOfArrayType given a Dataframe and a column name that is not of array type should return false") {
     val filePath: String = getClass.getResource("/test_data_2.json").getPath
-    val columnOfArrayType = "data2"
+    val columnOfArrayType: String = "data2"
     val actual: Boolean = FlattenedDataFrame.isColumnOfArrayType(dataFrame = spark.read.json(filePath), column = columnOfArrayType)
     assertTrue(!actual)
   }
