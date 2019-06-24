@@ -1,6 +1,7 @@
 package flattenedDataFrame
 
 import org.apache.spark.sql.functions.{array, col, explode}
+import org.apache.spark.sql.types.{ArrayType, StructType}
 import org.apache.spark.sql.{Column, DataFrame}
 
 case class FlattenedDataFrame(val df: DataFrame)
@@ -11,24 +12,21 @@ object FlattenedDataFrame {
   }
 
   def flatten(df: DataFrame, columnChar: String, columnsToExclude: List[String]): DataFrame = {
-    val structType: String = "Struct"
-    val arrayType: String = "Array"
-
-    val columnsToExplode: List[String] = df.dtypes
-      .filter({ case (_, dataType: String) => dataType.startsWith(arrayType) })
-      .map(_._1).toList
+    val columnsToExplode: List[String] = df.schema.fields
+      .filter(field => field.dataType.isInstanceOf[ArrayType])
+      .map(field => field.name).toList
 
     val columns: List[String] = columnsToExplode.toSet.diff(columnsToExclude.toSet).toList
 
     val explodedDataFrame: DataFrame = explodeColumns(dataFrame = df, columns = columns)
 
-    val nestedColumns: List[String] = explodedDataFrame.dtypes
-      .filter({ case (_, dataType: String) => dataType.startsWith(structType) })
-      .map(_._1).toList
+    val nestedColumns: List[String] = explodedDataFrame.schema.fields
+      .filter(field => field.dataType.isInstanceOf[StructType])
+      .map(field => field.name).toList
 
-    val otherColumns: List[String] = explodedDataFrame.dtypes
-      .filter({ case (_, dataType: String) => !dataType.startsWith(structType) })
-      .map(_._1).toList
+    val otherColumns: List[String] = explodedDataFrame.schema.fields
+      .filter(field => !field.dataType.isInstanceOf[StructType])
+      .map(field => field.name).toList
 
     val flatColumns: List[String] = columnsToExclude.foldLeft(otherColumns)((acc: List[String], column: String) =>
       if (nestedColumns.contains(column)) column :: acc else acc)
@@ -38,7 +36,7 @@ object FlattenedDataFrame {
     val columnsToCastToArray: List[String] = columnsToExclude.filter(df.columns.contains)
 
     val dataFrameWithCorrectTypes: DataFrame = columnsToCastToArray.foldLeft(explodedDataFrame)((acc: DataFrame, column: String) =>
-      if (!isColumnOfType(dataFrame = acc, column = column)) acc.withColumn(column, array(col(column))) else acc)
+      if (!isColumnOfArrayType(dataFrame = acc, column = column)) acc.withColumn(column, array(col(column))) else acc)
 
     val columnsToSelect: List[Column] = (for {
       nestedColumn: String <- newNestedColumns
@@ -57,7 +55,7 @@ object FlattenedDataFrame {
     columns.foldLeft(dataFrame)((acc: DataFrame, column: String) => acc.withColumn(column, explode(col(column))))
   }
 
-  def isColumnOfType(dataFrame: DataFrame, column: String): Boolean = {
-    dataFrame.select(column).schema.fields(0).dataType.equals(org.apache.spark.sql.types.ArrayType)
+  def isColumnOfArrayType(dataFrame: DataFrame, column: String): Boolean = {
+    dataFrame.select(column).schema.fields(0).dataType.isInstanceOf[org.apache.spark.sql.types.ArrayType]
   }
 }
