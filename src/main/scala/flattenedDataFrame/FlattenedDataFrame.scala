@@ -12,7 +12,6 @@ object FlattenedDataFrame {
   }
 
   def flatten(df: DataFrame, columnChar: String, columnsToExclude: List[String]): DataFrame = {
-
     val columnsToExplode: List[String] = df.schema.fields
       .filter(field => field.dataType.isInstanceOf[ArrayType])
       .map(field => field.name).toList
