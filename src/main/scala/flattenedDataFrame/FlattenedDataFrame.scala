@@ -1,6 +1,7 @@
 package flattenedDataFrame
 
 import org.apache.spark.sql.functions.{array, col, explode}
+import org.apache.spark.sql.types.{ArrayType, StructType}
 import org.apache.spark.sql.{Column, DataFrame}
 
 case class FlattenedDataFrame(val df: DataFrame)
@@ -11,24 +12,22 @@ object FlattenedDataFrame {
   }
 
   def flatten(df: DataFrame, columnChar: String, columnsToExclude: List[String]): DataFrame = {
-    val structType: String = "Struct"
-      val arrayType: String = "Array"
 
-    val columnsToExplode: List[String] = df.dtypes
-      .filter({ case (_, dataType: String) => dataType.startsWith(arrayType) })
-      .map(_._1).toList
+    val columnsToExplode: List[String] = df.schema.fields
+      .filter(field => field.dataType.isInstanceOf[ArrayType])
+      .map(field => field.name).toList
 
     val columns: List[String] = columnsToExplode.toSet.diff(columnsToExclude.toSet).toList
 
     val explodedDataFrame: DataFrame = explodeColumns(dataFrame = df, columns = columns)
 
-    val nestedColumns: List[String] = explodedDataFrame.dtypes
-      .filter({ case (_, dataType: String) => dataType.startsWith(structType) })
-      .map(_._1).toList
+    val nestedColumns: List[String] = explodedDataFrame.schema.fields
+      .filter(field => field.dataType.isInstanceOf[StructType])
+      .map(field => field.name).toList
 
-    val otherColumns: List[String] = explodedDataFrame.dtypes
-      .filter({ case (_, dataType: String) => !dataType.startsWith(structType) })
-      .map(_._1).toList
+    val otherColumns: List[String] = explodedDataFrame.schema.fields
+      .filter(field => !field.dataType.isInstanceOf[StructType])
+      .map(field => field.name).toList
 
     val flatColumns: List[String] = columnsToExclude.foldLeft(otherColumns)((acc: List[String], column: String) =>
       if (nestedColumns.contains(column)) column :: acc else acc)
@@ -43,7 +42,7 @@ object FlattenedDataFrame {
     val columnsToSelect: List[Column] = (for {
       nestedColumn: String <- newNestedColumns
       column: String <- dataFrameWithCorrectTypes.select(nestedColumn + ".*").columns
-    } yield col(nestedColumn + '.' + column).alias(nestedColumn + columnChar + column)) ++ flatColumns.map(c =>  col(c))
+    } yield col(nestedColumn + '.' + column).alias(nestedColumn + columnChar + column)) ++ flatColumns.map(c => col(c))
 
     val dataFrame: DataFrame = dataFrameWithCorrectTypes.select(columnsToSelect.map(x => x): _*)
 
