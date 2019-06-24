@@ -12,7 +12,7 @@ object FlattenedDataFrame {
 
   def flatten(df: DataFrame, columnChar: String, columnsToExclude: List[String]): DataFrame = {
     val structType: String = "Struct"
-      val arrayType: String = "Array"
+    val arrayType: String = "Array"
 
     val columnsToExplode: List[String] = df.dtypes
       .filter({ case (_, dataType: String) => dataType.startsWith(arrayType) })
@@ -43,7 +43,7 @@ object FlattenedDataFrame {
     val columnsToSelect: List[Column] = (for {
       nestedColumn: String <- newNestedColumns
       column: String <- dataFrameWithCorrectTypes.select(nestedColumn + ".*").columns
-    } yield col(nestedColumn + '.' + column).alias(nestedColumn + columnChar + column)) ++ flatColumns.map(c =>  col(c))
+    } yield col(nestedColumn + '.' + column).alias(nestedColumn + columnChar + column)) ++ flatColumns.map(c => col(c))
 
     val dataFrame: DataFrame = dataFrameWithCorrectTypes.select(columnsToSelect.map(x => x): _*)
 
@@ -52,7 +52,7 @@ object FlattenedDataFrame {
       case _ => flatten(df = dataFrame, columnChar = columnChar, columnsToExclude = columnsToExclude)
     }
   }
-    
+
   def explodeColumns(dataFrame: DataFrame, columns: List[String]): DataFrame = {
     columns.foldLeft(dataFrame)((acc: DataFrame, column: String) => acc.withColumn(column, explode(col(column))))
   }

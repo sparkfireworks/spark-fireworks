@@ -2,6 +2,7 @@ package flattenedDataFrame
 
 import com.holdenkarau.spark.testing.DataFrameSuiteBase
 import org.apache.spark.sql.DataFrame
+import org.apache.spark.sql.functions.{col, concat_ws}
 import org.scalatest.FunSuite
 
 class FlattenedDataFrameSpec extends FunSuite with DataFrameSuiteBase {
@@ -14,9 +15,9 @@ class FlattenedDataFrameSpec extends FunSuite with DataFrameSuiteBase {
     ++
     """
     val emptyDataFrame: DataFrame = spark.emptyDataFrame
-    val actual: DataFrame = FlattenedDataFrame(nestedDataFrame = emptyDataFrame).df
-    val expected: DataFrame = spark.emptyDataFrame
-    assertDataFrameEquals(expected, actual)
+    val actual: Int = hashed_dataframe(FlattenedDataFrame(nestedDataFrame = emptyDataFrame).df)
+    val expected: Int = DataFramesHashValues.emptyDataFrame
+    assert(expected == actual)
   }
 
   test("nested dataframe") {
@@ -40,19 +41,16 @@ class FlattenedDataFrameSpec extends FunSuite with DataFrameSuiteBase {
     """
     val filePath: String = getClass.getResource("/test_data.json").getPath
     val nestedDataFrame: DataFrame = spark.read.json(filePath)
-    val actual: DataFrame = FlattenedDataFrame(nestedDataFrame = nestedDataFrame, columnsToExclude = List()).df
-    println(hashed_dataframe(actual))
-    // val expected: DataFrame = get_ordered_dataframe(fileName = "/expected_data.json", columns = actual.columns)
-    val expected: DataFrame = spark.emptyDataFrame
-    assertDataFrameEquals(expected, actual)
+    val actual: Int = hashed_dataframe(FlattenedDataFrame(nestedDataFrame = nestedDataFrame, columnsToExclude = List()).df)
+    val expected: Int = DataFramesHashValues.nestedDataFrame
+    assert(expected == actual)
   }
 
-  private def hashed_dataframe(df: DataFrame) ={
-    df.columns.mkString("_")
-  }
-
-  private def get_ordered_dataframe(fileName: String, columns: Array[String]) = {
-    spark.read.json(getClass.getResource(fileName).getPath)
-      .select(columns.head, columns.tail: _*)
+  private def hashed_dataframe(df: DataFrame): Int = {
+    val selection = df.columns.map(col)
+    val joined_values: String = "joined_values"
+    (df.columns.mkString("_") +
+      df.withColumn(joined_values, concat_ws("_", selection: _*)).select(joined_values).
+        collect.foldLeft("") { (acc, x) => acc + x(0) }).hashCode
   }
 }
