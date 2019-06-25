@@ -37,7 +37,7 @@ class SparkFireworksSpec extends FunSuite with DataFrameSuiteBase {
     |                  8|            Weather|  3|
     |                  9|            Weather|  3|
     +-------------------+-------------------+---+"""
-    val filePath: String = getClass.getResource(name = "/test_data.json").getPath
+    val filePath: String = getClass.getResource("/test_data.json").getPath
     val nestedDataFrame: DataFrame = spark.read.json(filePath)
     val actual: Int = hashed_dataframe(SparkFireworks(nestedDataFrame = nestedDataFrame, columnsToExclude = List()).df)
     val expected: Int = DataFramesHashValues.nestedDataFrame
@@ -50,16 +50,17 @@ class SparkFireworksSpec extends FunSuite with DataFrameSuiteBase {
     (df.columns.mkString("_") +
       df.withColumn(joined_values, concat_ws(sep = "_", selection: _*)).select(joined_values).
         collect.foldLeft("") { (acc, x) => acc + x(0) }).hashCode
+  }
 
   test(testName = "isColumnOfArrayType given a Dataframe with array column and that column name should return true") {
-    val filePath: String = getClass.getResource(name = "/test_data_2.json").getPath
+    val filePath: String = getClass.getResource("/test_data_2.json").getPath
     val columnOfArrayType: String = "data1"
     val actual: Boolean = SparkFireworks.isColumnOfArrayType(dataFrame = spark.read.json(filePath), column = columnOfArrayType)
     assertTrue(actual)
   }
 
   test(testName = "isColumnOfArrayType given a Dataframe and a column name that is not of array type should return false") {
-    val filePath: String = getClass.getResource(name = "/test_data_2.json").getPath
+    val filePath: String = getClass.getResource("/test_data_2.json").getPath
     val columnOfArrayType: String = "data2"
     val actual: Boolean = SparkFireworks.isColumnOfArrayType(dataFrame = spark.read.json(filePath), column = columnOfArrayType)
     assertTrue(!actual)
