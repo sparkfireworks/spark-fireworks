@@ -1,11 +1,11 @@
-package flattenedDataFrame
+package sparkFireworks
 
 import com.holdenkarau.spark.testing.DataFrameSuiteBase
-import org.apache.spark.sql.{Column, DataFrame}
 import org.apache.spark.sql.functions.{col, concat_ws}
+import org.apache.spark.sql.{Column, DataFrame}
 import org.scalatest.FunSuite
 
-class FlattenedDataFrameSpec extends FunSuite with DataFrameSuiteBase {
+class SparkFireworksSpec extends FunSuite with DataFrameSuiteBase {
   test(testName = "empty dataframe") {
     """
     {}
@@ -14,7 +14,7 @@ class FlattenedDataFrameSpec extends FunSuite with DataFrameSuiteBase {
     ++
     ++"""
     val emptyDataFrame: DataFrame = spark.emptyDataFrame
-    val actual: Int = hashed_dataframe(FlattenedDataFrame(nestedDataFrame = emptyDataFrame).df)
+    val actual: Int = hashed_dataframe(SparkFireworks(nestedDataFrame = emptyDataFrame).df)
     val expected: Int = DataFramesHashValues.emptyDataFrame
     assert(expected == actual)
   }
@@ -39,7 +39,7 @@ class FlattenedDataFrameSpec extends FunSuite with DataFrameSuiteBase {
     +-------------------+-------------------+---+"""
     val filePath: String = getClass.getResource(name = "/test_data.json").getPath
     val nestedDataFrame: DataFrame = spark.read.json(filePath)
-    val actual: Int = hashed_dataframe(FlattenedDataFrame(nestedDataFrame = nestedDataFrame, columnsToExclude = List()).df)
+    val actual: Int = hashed_dataframe(SparkFireworks(nestedDataFrame = nestedDataFrame, columnsToExclude = List()).df)
     val expected: Int = DataFramesHashValues.nestedDataFrame
     assert(expected == actual)
   }
@@ -54,14 +54,14 @@ class FlattenedDataFrameSpec extends FunSuite with DataFrameSuiteBase {
   test(testName = "isColumnOfArrayType given a Dataframe with array column and that column name should return true") {
     val filePath: String = getClass.getResource(name = "/test_data_2.json").getPath
     val columnOfArrayType: String = "data1"
-    val actual: Boolean = FlattenedDataFrame.isColumnOfArrayType(dataFrame = spark.read.json(filePath), column = columnOfArrayType)
+    val actual: Boolean = SparkFireworks.isColumnOfArrayType(dataFrame = spark.read.json(filePath), column = columnOfArrayType)
     assertTrue(actual)
   }
 
   test(testName = "isColumnOfArrayType given a Dataframe and a column name that is not of array type should return false") {
     val filePath: String = getClass.getResource(name = "/test_data_2.json").getPath
     val columnOfArrayType: String = "data2"
-    val actual: Boolean = FlattenedDataFrame.isColumnOfArrayType(dataFrame = spark.read.json(filePath), column = columnOfArrayType)
+    val actual: Boolean = SparkFireworks.isColumnOfArrayType(dataFrame = spark.read.json(filePath), column = columnOfArrayType)
     assertTrue(!actual)
   }
 }

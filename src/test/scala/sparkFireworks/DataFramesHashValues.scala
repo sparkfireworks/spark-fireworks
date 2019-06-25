@@ -1,4 +1,4 @@
-package flattenedDataFrame
+package sparkFireworks
 
 object DataFramesHashValues {
   """

@@ -1,14 +1,14 @@
-package flattenedDataFrame
+package sparkFireworks
 
 import org.apache.spark.sql.functions.{array, col, explode}
 import org.apache.spark.sql.types.{ArrayType, StructType}
 import org.apache.spark.sql.{Column, DataFrame}
 
-case class FlattenedDataFrame(val df: DataFrame)
+case class SparkFireworks(val df: DataFrame)
 
-object FlattenedDataFrame {
-  def apply(nestedDataFrame: DataFrame, columnChar: String = "_", columnsToExclude: List[String] = List()): FlattenedDataFrame = {
-    FlattenedDataFrame(df = flatten(df = nestedDataFrame, columnChar = columnChar, columnsToExclude = columnsToExclude))
+object SparkFireworks {
+  def apply(nestedDataFrame: DataFrame, columnChar: String = "_", columnsToExclude: List[String] = List()): SparkFireworks = {
+    SparkFireworks(df = flatten(df = nestedDataFrame, columnChar = columnChar, columnsToExclude = columnsToExclude))
   }
 
   def flatten(df: DataFrame, columnChar: String, columnsToExclude: List[String]): DataFrame = {

@@ -1,8 +1,8 @@
 
 ThisBuild / scalaVersion     := "2.11.1"
 ThisBuild / version          := "0.1.0-SNAPSHOT"
-ThisBuild / organization     := "functions"
-ThisBuild / organizationName := "dataframe-flatten"
+ThisBuild / organization     := "Spark Fireworks"
+ThisBuild / organizationName := "Spark Fireworks"
 
 lazy val dependencies = Seq(
   // https://mvnrepository.com/artifact/org.scalatest/scalatest
@@ -28,4 +28,4 @@ lazy val root = (project in file("."))
   )
 
 // Simple and constant jar name
-assemblyJarName in assembly := s"dataframe-flatten.jar"
+assemblyJarName in assembly := s"spark-fireworks.jar"
