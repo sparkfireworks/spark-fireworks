@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://travis-ci.org/sparkfireworks/spark-fireworks.svg?branch=master)](https://travis-ci.org/sparkfireworks/spark-fireworks)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/a0d361f5f03e45b4ae1d97d67145deee)](https://www.codacy.com/app/mail_62/spark-fireworks?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sparkfireworks/spark-fireworks&amp;utm_campaign=Badge_Grade)
-[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/a0d361f5f03e45b4ae1d97d67145deee)](https://www.codacy.com/app/mail_62/spark-fireworks?utm_source=github.com&utm_medium=referral&utm_content=sparkfireworks/spark-fireworks&utm_campaign=Badge_Coverage)
+[![Codacy Badge](https://api.codacy.com/project/badge/Coverage/a0d361f5f03e45b4ae1d97d67145deee)](https://www.codacy.com/app/mail_62/spark-fireworks?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=sparkfireworks/spark-fireworks&amp;utm_campaign=Badge_Coverage)
 
 Spark Fireworks works with Spark dataframes originated by parsing Json or XML files. Reading valid Json and XML files often generates complex dataframes that need to be exploded and flatenned in several columns to produce a totally expanded tree.
 
