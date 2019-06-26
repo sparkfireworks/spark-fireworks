@@ -12,9 +12,16 @@ It assumes a target Hive table is provided, so that the final results can be per
 
 Spark Fireworks is written in Scala, highly test covered.
 
+Builds are automated using Travis CI and code coverage and quality are checked with Codacy.
+
+To run unit tests type:
+```bash
+sbt test
+```
+
 ## Authors
-*   [Gonçalo Castro](https://github.comg/oncaloCCastro)
-*   [Ricardo Miranda](https://github.com/ricardoMiranda)
+*   [Gonçalo Castro](https://github.com/GoncaloCCastro)
+*   [Ricardo Miranda](https://github.com/RicardoMiranda)
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
