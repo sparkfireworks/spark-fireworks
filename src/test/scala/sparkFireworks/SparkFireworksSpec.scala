@@ -6,6 +6,14 @@ import org.apache.spark.sql.{Column, DataFrame}
 import org.scalatest.FunSuite
 
 class SparkFireworksSpec extends FunSuite with DataFrameSuiteBase {
+  private def hashed_dataframe(df: DataFrame): Int = {
+    val selection: Array[Column] = df.columns.map(col)
+    val joined_values: String = "joined_values"
+    (df.columns.mkString("_") +
+      df.withColumn(joined_values, concat_ws(sep = "_", selection: _*)).select(joined_values).
+        collect.foldLeft("") { (acc, x) => acc + x(0) }).hashCode
+  }
+
   test(testName = "empty dataframe") {
     """
     {}
@@ -42,14 +50,6 @@ class SparkFireworksSpec extends FunSuite with DataFrameSuiteBase {
     val actual: Int = hashed_dataframe(SparkFireworks(nestedDataFrame = nestedDataFrame, columnsToExclude = List()).df)
     val expected: Int = DataFramesHashValues.nestedDataFrame
     assert(expected == actual)
-  }
-
-  private def hashed_dataframe(df: DataFrame): Int = {
-    val selection: Array[Column] = df.columns.map(col)
-    val joined_values: String = "joined_values"
-    (df.columns.mkString("_") +
-      df.withColumn(joined_values, concat_ws(sep = "_", selection: _*)).select(joined_values).
-        collect.foldLeft("") { (acc, x) => acc + x(0) }).hashCode
   }
 
   test(testName = "isColumnOfArrayType given a Dataframe with array column and that column name should return true") {

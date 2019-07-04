@@ -52,10 +52,10 @@ object SparkFireworks {
   }
 
   def explodeColumns(dataFrame: DataFrame, columns: List[String]): DataFrame = {
-    columns.foldLeft(dataFrame)((acc: DataFrame, column: String) => acc.withColumn(column, explode(col(column))))
+    columns.foldLeft(dataFrame: DataFrame)((acc: DataFrame, column: String) => acc.withColumn(column, explode(col(column))))
   }
 
   def isColumnOfArrayType(dataFrame: DataFrame, column: String): Boolean = {
-    dataFrame.select(column).schema.fields(0).dataType.isInstanceOf[org.apache.spark.sql.types.ArrayType]
+    dataFrame.select(column: String).schema.fields(0).dataType.isInstanceOf[org.apache.spark.sql.types.ArrayType]
   }
 }
