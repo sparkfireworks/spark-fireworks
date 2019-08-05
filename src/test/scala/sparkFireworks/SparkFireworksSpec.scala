@@ -1,19 +1,10 @@
 package sparkFireworks
 
 import com.holdenkarau.spark.testing.DataFrameSuiteBase
-import org.apache.spark.sql.functions.{col, concat_ws}
-import org.apache.spark.sql.{Column, DataFrame}
+import org.apache.spark.sql.DataFrame
 import org.scalatest.FunSuite
 
 class SparkFireworksSpec extends FunSuite with DataFrameSuiteBase {
-  private def hashed_dataframe(df: DataFrame): Int = {
-    val selection: Array[Column] = df.columns.map(col)
-    val joined_values: String = "joined_values"
-    (df.columns.mkString("_") +
-      df.withColumn(joined_values, concat_ws(sep = "_", selection: _*)).select(joined_values).
-        collect.foldLeft("") { (acc, x) => acc + x(0) }).hashCode
-  }
-
   test(testName = "empty dataframe") {
     """
     {}
@@ -22,12 +13,12 @@ class SparkFireworksSpec extends FunSuite with DataFrameSuiteBase {
     ++
     ++"""
     val emptyDataFrame: DataFrame = spark.emptyDataFrame
-    val actual: Int = hashed_dataframe(SparkFireworks(nestedDataFrame = emptyDataFrame).df)
+    val actual: Int = SparkUtils.hashed_dataframe(SparkFireworks(nestedDataFrame = emptyDataFrame).df)
     val expected: Int = DataFramesHashValues.emptyDataFrame
     assert(expected == actual)
   }
 
-  test("nested dataframe") {
+  test(testName = "nested dataframe") {
     """
     {"id": 1,"nested": {"level1": {"data1": [1,2,3],"data2": "Hello"}}}
     {"id": 2,"nested": {"level1": {"data1": [4,5,6],"data2": "Nice"}}}
@@ -47,7 +38,7 @@ class SparkFireworksSpec extends FunSuite with DataFrameSuiteBase {
     +-------------------+-------------------+---+"""
     val filePath: String = getClass.getResource("/test_data.json").getPath
     val nestedDataFrame: DataFrame = spark.read.json(filePath)
-    val actual: Int = hashed_dataframe(SparkFireworks(nestedDataFrame = nestedDataFrame, columnsToExclude = List()).df)
+    val actual: Int = SparkUtils.hashed_dataframe(SparkFireworks(nestedDataFrame = nestedDataFrame, columnsToExclude = List()).df)
     val expected: Int = DataFramesHashValues.nestedDataFrame
     assert(expected == actual)
   }
